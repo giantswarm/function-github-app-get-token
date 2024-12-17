@@ -1,0 +1,8 @@
+---
+apiVersion: meta.pkg.crossplane.io/v1beta1
+kind: Function
+metadata:
+  name: function-github-app-get-token
+spec:
+  package: 172.18.0.3:5000/function-github-app-get-token:latest
+  packagePullPolicy: Always

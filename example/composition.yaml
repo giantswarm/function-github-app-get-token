@@ -1,0 +1,49 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: function-github-app-get-token
+spec:
+  compositeTypeRef:
+    apiVersion: example.crossplane.io/v1alpha1
+    kind: XR
+  mode: Pipeline
+  pipeline:
+    - step: pull-extra-resources
+      functionRef:
+        name: function-extra-resources
+      input:
+        apiVersion: extra-resources.fn.crossplane.io/v1beta1
+        kind: Input
+        spec:
+          extraResources:
+            - kind: Secret
+              apiVersion: v1
+              into: githubAppCredentials
+              type: Selector
+              selector:
+                maxMatch: 2
+                minMatch: 1
+                matchLabels:
+                  - key: secret
+                    type: Value
+                    value: github-app
+    - step: run-the-template
+      functionRef:
+        name: function-github-app-get-token
+      input:
+        apiVersion: template.fn.crossplane.io/v1beta1
+        kind: Input
+        secretKey: githubAppCredentials
+    - step: shell
+      functionRef:
+        name: function-shell
+      input:
+        apiVersion: shell.fn.crossplane.io/v1beta1
+        kind: Parameters
+        shellEnvVars:
+          - key: GITHUB_TOKEN
+            valueRef: "context[apiextensions.crossplane.io/github-app-get-token].github-token"
+        shellCommand: |
+          echo "GITHUB_TOKEN: $GITHUB_TOKEN"
+        stdoutField: status.atFunction.shell.stdout
+        stderrField: status.atFunction.shell.stderr
