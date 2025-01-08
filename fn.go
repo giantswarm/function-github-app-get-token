@@ -70,7 +70,7 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 		return rsp, nil
 	}
 	if in.ContextKey == "" {
-		in.ContextKey = extraResourcesContextKey
+		in.ContextKey = extraResourcesSecretValueKey
 	}
 
 	contextForSecret, ok := request.GetContextKey(req, extraResourcesContextKey)
@@ -85,6 +85,7 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 		GetStructValue().Fields["data"].
 		GetStructValue().Fields[in.ContextKey].
 		GetStringValue()
+
 	secretDataInt, err := base64.StdEncoding.DecodeString(base64EncSecret)
 	if err != nil {
 		response.Fatal(rsp, errors.Wrap(err, fmt.Sprintf("failed to decode secret data from base64: %v", err)))
@@ -93,7 +94,7 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 
 	var creds Credentials
 	if err := json.Unmarshal(secretDataInt, &creds); err != nil {
-		responseFatal(rsp, log, errors.Wrap(err, fmt.Sprintf("failed to decode secret data from json: %v", err)))
+		responseFatal(rsp, log, errors.Wrap(err, fmt.Sprintf("failed to decode secret data from JSON: %v", err)))
 		return rsp, err
 	}
 	appId, err := strconv.ParseInt(creds.AppAuths[0].Id, 10, 64)
