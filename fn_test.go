@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/durationpb"
 
@@ -16,7 +16,6 @@ import (
 )
 
 func TestRunFunction(t *testing.T) {
-
 	type args struct {
 		ctx context.Context
 		req *fnv1.RunFunctionRequest
@@ -31,15 +30,15 @@ func TestRunFunction(t *testing.T) {
 		args   args
 		want   want
 	}{
-		"ResponseIsReturned": {
-			reason: "The Function should return a fatal result if no input was specified",
+		"ErrorOnNoContext": {
+			reason: "With no context, an error should be returned immediately",
 			args: args{
 				req: &fnv1.RunFunctionRequest{
 					Meta: &fnv1.RequestMeta{Tag: "hello"},
 					Input: resource.MustStructJSON(`{
 						"apiVersion": "template.fn.crossplane.io/v1beta1",
 						"kind": "Input",
-						"example": "Hello, world"
+            "secretKey": "githubAppCredentials"
 					}`),
 				},
 			},
@@ -48,20 +47,13 @@ func TestRunFunction(t *testing.T) {
 					Meta: &fnv1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
 					Results: []*fnv1.Result{
 						{
-							Severity: fnv1.Severity_SEVERITY_NORMAL,
-							Message:  "I was run with input \"Hello, world\"!",
+							Severity: fnv1.Severity_SEVERITY_FATAL,
+							Message:  "failed to get secret from context using key apiextensions.crossplane.io/extra-resources",
 							Target:   fnv1.Target_TARGET_COMPOSITE.Enum(),
 						},
 					},
-					Conditions: []*fnv1.Condition{
-						{
-							Type:   "FunctionSuccess",
-							Status: fnv1.Status_STATUS_CONDITION_TRUE,
-							Reason: "Success",
-							Target: fnv1.Target_TARGET_COMPOSITE_AND_CLAIM.Enum(),
-						},
-					},
 				},
+				err: fmt.Errorf("failed to get secret from context using key apiextensions.crossplane.io/extra-resources"),
 			},
 		},
 	}
@@ -75,8 +67,8 @@ func TestRunFunction(t *testing.T) {
 				t.Errorf("%s\nf.RunFunction(...): -want rsp, +got rsp:\n%s", tc.reason, diff)
 			}
 
-			if diff := cmp.Diff(tc.want.err, err, cmpopts.EquateErrors()); diff != "" {
-				t.Errorf("%s\nf.RunFunction(...): -want err, +got err:\n%s", tc.reason, diff)
+			if (tc.want.err == nil && err != nil) || (tc.want.err != nil && err == nil) || (tc.want.err != nil && err != nil && tc.want.err.Error() != err.Error()) {
+				t.Errorf("%s\nf.RunFunction(...): -want err:\n%s\n, +got err:\n%s\n", tc.reason, tc.want.err, err)
 			}
 		})
 	}

@@ -22,3 +22,4 @@ go.work
 
 function
 package/*.xpkg
+example/.*
