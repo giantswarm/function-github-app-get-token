@@ -15,9 +15,10 @@ import (
 	fnv1 "github.com/crossplane/function-sdk-go/proto/v1"
 	"github.com/crossplane/function-sdk-go/request"
 	"github.com/crossplane/function-sdk-go/response"
-	"github.com/giantswarm/function-github-app-get-token/input/v1beta1"
 	"github.com/google/go-github/v66/github"
 	"google.golang.org/protobuf/types/known/structpb"
+
+	"github.com/giantswarm/function-github-app-get-token/input/v1beta1"
 )
 
 const (
