@@ -2,7 +2,7 @@ module github.com/giantswarm/function-github-app-get-token
 
 go 1.23.0
 
-toolchain go1.23.4
+toolchain go1.23.5
 
 require (
 	github.com/alecthomas/kong v1.6.1
