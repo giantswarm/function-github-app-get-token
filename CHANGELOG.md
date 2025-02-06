@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- fix function group name to github-app-get-token.fn.crossplane.giantswarm.io
+
+[0.1.0]
+
 - first release
 
 [Unreleased]: https://github.com/giantswarm/REPOSITORY_NAME/tree/main
