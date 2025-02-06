@@ -29,4 +29,4 @@ repos:
         # timeout is needed for CI
         args: [-c, .golangci.yml, --timeout, 300s]
       - id: go-imports
-        args: [-local, github.com/giantswarm/app-admission-controller]
+        args: [-local, github.com/giantswarm/function-github-app-get-token]
