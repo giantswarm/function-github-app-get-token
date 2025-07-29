@@ -9,8 +9,9 @@ require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.13.0
 	github.com/crossplane/crossplane-runtime v1.18.0
 	github.com/crossplane/function-sdk-go v0.4.0
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/google/go-github/v66 v66.0.0
+	github.com/google/go-github/v74 v74.0.0
 	google.golang.org/protobuf v1.36.4
 	k8s.io/apimachinery v0.32.1
 	sigs.k8s.io/controller-tools v0.17.1
